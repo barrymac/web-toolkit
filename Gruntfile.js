@@ -171,7 +171,14 @@ module.exports = function(grunt) {
                     serve: true
                 }
             }
+        },
+
+        exec: {
+            manual_bs_test: {
+                cmd: 'java -jar test/libraries/BrowserStackTunnel.jar $BROWSERSTACK_API localhost,4000,0'
+            }
         }
+
     });
 
     grunt.loadNpmTasks('grunt-contrib-clean');
@@ -185,6 +192,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-svgmin');
     grunt.loadNpmTasks('grunt-grunticon');
     grunt.loadNpmTasks('grunt-jekyll');
+    grunt.loadNpmTasks('grunt-exec');
 
     grunt.registerTask('default', ['clean:toolkit', 'compass:toolkit', 'jshint', 'requirejs']);
     grunt.registerTask('spy', ['clean:toolkit', 'compass:toolkit', 'jshint', 'requirejs', 'jekyll:build', 'watch']);
@@ -192,4 +200,5 @@ module.exports = function(grunt) {
     grunt.registerTask('fonts', ['clean:css', 'clean:fonts', 'svgmin:fonts', 'webfont', 'compass:toolkit']);
     grunt.registerTask('svgs', ['svgmin:icons', 'grunticon']);
     grunt.registerTask('test', ['mocha']);
+    grunt.registerTask('manual_bs_test', ['exec:manual_bs_test']);
 };

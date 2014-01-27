@@ -19,6 +19,8 @@
 	    ,"grunt-svgmin": "latest"
 	    ,"grunt-grunticon": "latest"
 	    ,"grunt-jekyll": "latest"
+	    ,"browserstack-webdriver": "latest"
+	    ,"grunt-exec": "latest"
     },
     "scripts": {
         "test": "grunt test"
