@@ -144,7 +144,6 @@ module.exports = function(grunt) {
         mocha: {
             all: {
                 src: (function() {
-                    var pattern = grunt.option('pattern') || '[A-Z]*';
                     return ['_site/test.html'];
                 }()),
                 options: {
@@ -177,6 +176,17 @@ module.exports = function(grunt) {
             manual_bs_test: {
                 cmd: 'java -jar test/libraries/BrowserStackTunnel.jar $BROWSERSTACK_API localhost,4000,0'
             }
+        },
+
+        testee: {
+            crossBrowser: {
+                options:{
+                    urls: ['test.html'],
+                    browsers: ['phantom'],
+                    "root" : "_site/",
+                    "reporter" : "Spec"
+                }
+            }
         }
 
     });
@@ -193,6 +203,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-grunticon');
     grunt.loadNpmTasks('grunt-jekyll');
     grunt.loadNpmTasks('grunt-exec');
+    grunt.loadNpmTasks('testee');
 
     grunt.registerTask('default', ['clean:toolkit', 'compass:toolkit', 'jshint', 'requirejs']);
     grunt.registerTask('spy', ['clean:toolkit', 'compass:toolkit', 'jshint', 'requirejs', 'jekyll:build', 'watch']);
@@ -201,4 +212,5 @@ module.exports = function(grunt) {
     grunt.registerTask('svgs', ['svgmin:icons', 'grunticon']);
     grunt.registerTask('test', ['mocha']);
     grunt.registerTask('manual_bs_test', ['exec:manual_bs_test']);
+    grunt.registerTask('test_cross_browser', ['testee']);
 };
