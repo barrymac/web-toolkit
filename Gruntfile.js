@@ -184,7 +184,8 @@ module.exports = function(grunt) {
                     urls: ['test.html'],
                     browsers: ['phantom'],
                     "root" : "_site/",
-                    "reporter" : "Spec"
+                    "reporter" : "Spec",
+                    "coverage": true
                 }
             }
         }
