@@ -1,5 +1,7 @@
 function accordionSpec() {
 
+    document.body.innerHTML = window.__html__['_includes/components/accordion/default.html'];
+
     var describeSpec = 'Accordion module should';
 
     describe(describeSpec, function () {
@@ -101,7 +103,7 @@ function accordionSpec() {
 }
 
 if (window.define) {
-    define('specs/accordionSpec', ['components/accordion'], function () {
+    define(['jquery','components/accordion'], function() {
         return accordionSpec();
     });
 }

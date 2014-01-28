@@ -1,74 +1,50 @@
-requirejs.config({
-    baseUrl: 'dist/scripts/',
-    paths: {
-        mocha: '../../test/libraries/mocha',
-        chai: '../../test/libraries/chai',
-        smoax: '../../test/libraries/smoax',
-        runner: '../../test/runner',
-        specs: '../../test/specs/'
-    },
-    shim: {
-        smoax: {
-            exports: 'Smoax'
-        }
-    },
-    urlArgs: 'v=' + new Date().getTime()
-});
+function requireConfig(){
+    var config = {
+        baseUrl: 'grunt/js/',
+        paths: {
+            jquery: '../../static/lib/jquery-2.0.3',
+            mocha: '../../test/libraries/mocha',
+            chai: '../../test/libraries/chai',
+            runner: '../../test/runner',
+            specs: '../../test/specs/'
+        },
+        urlArgs: 'v=' + new Date().getTime() //cache bust
+    };
 
-define('setup',['chai', 'smoax'], function(chai, smoax) {
-
-    function uiSetup(headElement) {
-        var styles = ['test/libraries/mocha.css'];
-        var body = document.getElementsByTagName('body').item(0);
-        var linkElement, i;
-
-        for (i in styles) {
-            linkElement = document.createElement('link');
-            linkElement.setAttribute('rel', 'stylesheet');
-            linkElement.setAttribute('href', styles[i]);
-            headElement.appendChild(linkElement);
-        }
-    }
-    //phantomjs doesnt support .bind, so need to polyfill
-    if (!Function.prototype.bind) {
-        Function.prototype.bind = function (oThis) {
-            if (typeof this !== "function") {
-                // closest thing possible to the ECMAScript 5 internal IsCallable function
-                throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+//    only set up this is run through karma instead of mocha directly
+    if (window.__karma__){
+        var tests = [];
+        for (var file in window.__karma__.files) {
+            if (/Spec\.js$/.test(file)) {
+                tests.push(file);
             }
-
-            var aArgs = Array.prototype.slice.call(arguments, 1),
-                fToBind = this,
-                fNOP = function () {},
-                fBound = function () {
-                    return fToBind.apply(this instanceof fNOP && oThis
-                        ? this
-                        : oThis,
-                        aArgs.concat(Array.prototype.slice.call(arguments)));
-                };
-
-            fNOP.prototype = this.prototype;
-            fBound.prototype = new fNOP();
-
-            return fBound;
-        };
+        }
+        config.baseUrl = 'base/' + config.baseUrl;
+        config.deps = tests;
+        config.callback = window.__karma__.start;
     }
+    return config;
+}
 
-    // PhantomJS had some problem if should is set as a global variable and was timing out
-    // window.should = should
 
-    window.chai = chai;
-    window.assert = chai.assert;
-    window.expect = chai.expect;
-    window.to = chai.to;
 
-    uiSetup(document.getElementsByTagName('head')[0]);
+define('setup', function() {
     mocha.setup('bdd');
     mocha.setup({ignoreLeaks: true}); //otherwise mocha complains about jquery and moment being globals
 });
 
+define('setup-chai',['chai'], function(chai) { //dont think this is being used yet
+    window.chai = chai;
+    window.assert = chai.assert;
+    window.expect = chai.expect;
+    window.to = chai.to;
+    window.should = chai.should();
 
+});
+
+requirejs.config(requireConfig());
 require(['setup']);
+require(['setup-chai']);
 
 window.turnOffAnimation = function(selector){
     var offTime = '10ms'; //can't be zero as we still need the 'end' events to fire.

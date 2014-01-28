@@ -21,7 +21,12 @@
 	    ,"grunt-jekyll": "latest"
 	    ,"browserstack-webdriver": "latest"
 	    ,"grunt-exec": "latest"
-        ,"testee": "latest"
+        ,"karma": "latest"
+        ,"karma-mocha": "latest"
+        ,"karma-coverage": "latest"
+        ,"karma-browserstack-launcher": "latest"
+        ,"grunt-karma": "latest"
+        ,"grunt-istanbul-coverage": "latest"
     },
     "scripts": {
         "test": "grunt test"

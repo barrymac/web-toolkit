@@ -1,11 +1,11 @@
 if (typeof demo==='undefined') demo={};
-demo.tests = (function(){
+demo.tests = (function(mocha){
 
     function runTest(hash){
         var spec = hash.replace('test/','');
         var script = document.createElement('script');
-        script.src = "test/specs/" + spec + ".js";
-        script.onload =  function(){
+        script.src = "test/specs/" + spec + ".js"; //get the spec
+        script.onload =  function(){ //once loaded
             var $runTestLink = $('a[href*="#' + hash + '"]'),
                 $mocha = $('<div id="mocha" class="mocha-container"></div>');
             $runTestLink.parent().after($mocha);
@@ -89,8 +89,15 @@ demo.tests = (function(){
 });
 
 if (typeof window.define === "function" && window.define.amd){
-    define('demo/tests', function() {
-        return demo.tests( );
+    define('demo/tests', ['chai'], function(chai) {
+
+        window.chai = chai;
+        window.assert = chai.assert;
+        window.expect = chai.expect;
+        window.to = chai.to;
+        window.should = chai.should(); //just for now - refactor as always later :)
+
+        return demo.tests(mocha);
     });
 } else {
     demo.tests();

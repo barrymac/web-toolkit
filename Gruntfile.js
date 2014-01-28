@@ -35,7 +35,8 @@ module.exports = function(grunt) {
             toolkit: ['dist/images','dist/scripts','dist/stylesheets'],
             js: ['dist/scripts'],
             css: ['dist/images','dist/stylesheets'],
-            fonts: ['grunt/fonts/min','dist/fonts']
+            fonts: ['grunt/fonts/min','dist/fonts'],
+            coverage: ['test/coverage']
         },
         jshint: {
             toolkit: ['Gruntfile.js',
@@ -77,6 +78,12 @@ module.exports = function(grunt) {
                     dir: "dist/scripts",
                     removeCombined: true,
                     generateSourceMaps: false,
+                    paths: {
+                        mocha: '../../test/libraries/mocha',
+                        chai: '../../test/libraries/chai',
+                        runner: '../../test/runner',
+                        specs: '../../test/specs/'
+                    },
                     modules:[{
                         name: 'toolkit'
                     },{
@@ -141,18 +148,6 @@ module.exports = function(grunt) {
             }
         },
 
-        mocha: {
-            all: {
-                src: (function() {
-                    return ['_site/test.html'];
-                }()),
-                options: {
-                    run: false,
-                    log: false // Set to true to see console.log() output on the terminal
-                }
-            }
-        },
-
         jekyll: {                            // Task
             options: {                          // Universal options
                 bundleExec: true,
@@ -172,24 +167,44 @@ module.exports = function(grunt) {
             }
         },
 
+        mocha: {
+            all: {
+                src: (function() {
+                    return ['_site/test.html'];
+                }()),
+                options: {
+                    run: false,
+                    log: true // Set to true to see console.log() output on the terminal
+                }
+            }
+        },
+
+        karma: {
+            local: {
+                configFile: 'test/karma.conf.js'
+            },
+            crossBrowser: {
+                configFile: 'test/karma.crossbrowser.conf.js'
+            }
+        },
+        coverage: {
+            options: {
+                thresholds: {
+                    'statements': 90,
+                        'branches': 90,
+                        'lines': 90,
+                        'functions': 90
+                },
+                dir: 'coverage',
+                root: 'test'
+            }
+        },
+
         exec: {
             manual_bs_test: {
                 cmd: 'java -jar test/libraries/BrowserStackTunnel.jar $BROWSERSTACK_API localhost,4000,0'
             }
-        },
-
-        testee: {
-            crossBrowser: {
-                options:{
-                    urls: ['test.html'],
-                    browsers: ['phantom'],
-                    "root" : "_site/",
-                    "reporter" : "Spec",
-                    "coverage": true
-                }
-            }
         }
-
     });
 
     grunt.loadNpmTasks('grunt-contrib-clean');
@@ -204,14 +219,15 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-grunticon');
     grunt.loadNpmTasks('grunt-jekyll');
     grunt.loadNpmTasks('grunt-exec');
-    grunt.loadNpmTasks('testee');
+    grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-istanbul-coverage');
 
     grunt.registerTask('default', ['clean:toolkit', 'compass:toolkit', 'jshint', 'requirejs']);
     grunt.registerTask('spy', ['clean:toolkit', 'compass:toolkit', 'jshint', 'requirejs', 'jekyll:build', 'watch']);
     grunt.registerTask('sloppy', ['clean:toolkit', 'compass:toolkit', 'requirejs', 'watch']);
     grunt.registerTask('fonts', ['clean:css', 'clean:fonts', 'svgmin:fonts', 'webfont', 'compass:toolkit']);
     grunt.registerTask('svgs', ['svgmin:icons', 'grunticon']);
-    grunt.registerTask('test', ['mocha']);
+    grunt.registerTask('test', ['clean:coverage','karma:local', 'coverage']);
+    grunt.registerTask('test_mocha', ['mocha']);
     grunt.registerTask('manual_bs_test', ['exec:manual_bs_test']);
-    grunt.registerTask('test_cross_browser', ['testee']);
 };
